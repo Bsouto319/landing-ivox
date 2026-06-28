@@ -15,6 +15,13 @@
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
     fbq('init','2786179745090865');
     fbq('track','PageView');
+    fbq('track','ViewContent',{
+      content_name:'iVox — Fale em português. Ligue em inglês.',
+      content_ids:['ivox-lp'],
+      content_type:'product',
+      value:9.90,
+      currency:'USD'
+    });
   </script>
   <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=2786179745090865&ev=PageView&noscript=1"/></noscript>
 
@@ -35,7 +42,9 @@
   <link rel="apple-touch-icon" href="/ivox-icon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=800&q=70" media="(max-width: 768px)" />
+  <link rel="preload" as="image" href="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1400&q=80" media="(min-width: 769px)" />
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -92,10 +101,13 @@
     .hero-wrap { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
     .hero-photo {
       position: absolute; inset: 0;
-      background-image: url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1400&q=80');
+      background-image: url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=800&q=70');
       background-size: cover; background-position: center top;
       animation: kenburns 22s ease-in-out infinite alternate;
       will-change: transform;
+    }
+    @media (min-width: 769px) {
+      .hero-photo { background-image: url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1400&q=80'); }
     }
     @keyframes kenburns {
       0%   { transform: scale(1.0) translate(0%, 0%); }
@@ -353,7 +365,7 @@
       <div class="hero-trust">
         <span class="trust-item">Sem precisar falar inglês</span>
         <span class="trust-item">Navega menus automáticos</span>
-        <span class="trust-item">A partir de R$29,90/mês</span>
+        <span class="trust-item">A partir de $9,90/mês</span>
       </div>
     </div>
     <!-- Floating phone mockup -->
@@ -399,7 +411,7 @@
       <!-- Portuguese side -->
       <div class="demo-panel pt-panel">
         <div class="demo-flag-row">
-          <img src="https://flagcdn.com/w40/br.png" width="28" height="20" alt="Brasil" />
+          <img src="https://flagcdn.com/w40/br.png" width="28" height="20" alt="Brasil" loading="lazy" />
           <span class="demo-flag-label">Você fala em português</span>
         </div>
         <div class="demo-quote">"Quero reservar uma mesa para dois às oito horas da noite, por favor."</div>
@@ -423,7 +435,7 @@
       <!-- English side -->
       <div class="demo-panel en-panel">
         <div class="demo-flag-row">
-          <img src="https://flagcdn.com/w40/us.png" width="28" height="20" alt="USA" />
+          <img src="https://flagcdn.com/w40/us.png" width="28" height="20" alt="USA" loading="lazy" />
           <span class="demo-flag-label">iVox liga em inglês</span>
         </div>
         <div class="demo-quote">"I'd like to book a table for two at eight o'clock tonight, please."</div>
@@ -624,7 +636,7 @@
       <!-- Monthly -->
       <div class="price-card">
         <div class="price-name">Mensal</div>
-        <div class="price-val" id="price-monthly"><sup>R$</sup>29<span style="font-size:20px">,90</span></div>
+        <div class="price-val" id="price-monthly"><sup>R$</sup>57<span style="font-size:20px">,90</span></div>
         <div class="price-period" id="period-monthly">por mês</div>
         <div class="price-credits">20 ligações / mês</div>
         <ul class="price-features">
@@ -645,8 +657,8 @@
       <div class="price-card featured">
         <span class="price-badge">💰 Melhor valor — 2 meses grátis</span>
         <div class="price-name">Anual</div>
-        <div class="price-val" id="price-annual"><sup>R$</sup>295<span style="font-size:20px">,90</span></div>
-        <div class="price-period" id="period-annual">por ano (~R$24,65/mês)</div>
+        <div class="price-val" id="price-annual"><sup>R$</sup>555<span style="font-size:20px">,00</span></div>
+        <div class="price-period" id="period-annual">por ano (~R$46,25/mês)</div>
         <div class="price-credits">240 ligações / ano</div>
         <ul class="price-features">
           <li>Todos os 4 modelos de ligação</li>
@@ -665,9 +677,9 @@
       <!-- Top-up -->
       <div class="price-card">
         <div class="price-name">Top-up avulso</div>
-        <div class="price-val" id="price-topup"><sup>R$</sup>19<span style="font-size:20px">,90</span></div>
+        <div class="price-val" id="price-topup"><sup>R$</sup>29<span style="font-size:20px">,90</span></div>
         <div class="price-period" id="period-topup">pacote único</div>
-        <div class="price-credits">+15 ligações extras</div>
+        <div class="price-credits">+5 créditos extras</div>
         <ul class="price-features">
           <li>Não expira</li>
           <li>Pode comprar quantos quiser</li>
@@ -709,11 +721,12 @@
 <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
 
-    <!-- Step 1: Email capture -->
+    <!-- Step 1: Email + WhatsApp capture -->
     <div id="modal-step1">
       <h3>🎙️ Comece com 1 ligação grátis</h3>
-      <p class="modal-sub">Sem cartão agora. Deixe seu email e ganhe acesso imediato para testar o iVox — de graça.</p>
+      <p class="modal-sub">Sem cartão agora. Deixe seus dados e ganhe acesso imediato para testar o iVox — de graça.</p>
       <input type="email" id="modal-email" placeholder="seu@email.com" />
+      <input type="tel" id="modal-phone" placeholder="WhatsApp (ex: +1 305 000-0000)" />
       <button class="btn btn-green" style="width:100%;font-size:15px" onclick="submitLead()">
         Quero meu crédito grátis →
       </button>
@@ -721,13 +734,13 @@
       <p id="modal-loading">Liberando seu acesso...</p>
 
       <div class="modal-or">ou escolha um plano agora</div>
-      <div class="modal-plans">
-        <a href="https://ivox-api.btechsouto.shop/checkout?plan=annual_brl" class="modal-plan-btn featured-plan" onclick="fbq('track','InitiateCheckout')">
-          Anual — R$295,90 / ano
+      <div class="modal-plans" id="modal-plans-step1">
+        <a href="https://ivox-api.btechsouto.shop/checkout?plan=annual_brl" class="modal-plan-btn featured-plan" id="modal-annual-link" onclick="fbq('track','InitiateCheckout')">
+          <span id="modal-annual-text">Anual — R$555,00 / ano</span>
           <div class="modal-plan-sub">240 ligações · melhor valor · 2 meses grátis 🔥</div>
         </a>
-        <a href="https://ivox-api.btechsouto.shop/checkout?plan=monthly_brl" class="modal-plan-btn" onclick="fbq('track','InitiateCheckout')">
-          Mensal — R$29,90 / mês
+        <a href="https://ivox-api.btechsouto.shop/checkout?plan=monthly_brl" class="modal-plan-btn" id="modal-monthly-link" onclick="fbq('track','InitiateCheckout')">
+          <span id="modal-monthly-text">Mensal — R$57,90 / mês</span>
           <div class="modal-plan-sub">20 ligações · cancele quando quiser</div>
         </a>
       </div>
@@ -739,15 +752,15 @@
       <div style="text-align:center;margin-bottom:20px">
         <div style="font-size:48px;margin-bottom:8px">🎉</div>
         <h3 style="margin-bottom:6px">Crédito liberado!</h3>
-        <p class="modal-sub">Acesso enviado para seu email. Agora escolha seu plano para continuar usando o iVox:</p>
+        <p class="modal-sub">Em breve entraremos em contato via WhatsApp. Agora escolha seu plano para continuar usando o iVox:</p>
       </div>
       <div class="modal-plans">
-        <a href="https://ivox-api.btechsouto.shop/checkout?plan=annual_brl" class="modal-plan-btn featured-plan" onclick="fbq('track','InitiateCheckout')">
-          Anual — R$295,90 / ano
+        <a href="https://ivox-api.btechsouto.shop/checkout?plan=annual_brl" class="modal-plan-btn featured-plan" id="modal-annual-link2" onclick="fbq('track','InitiateCheckout')">
+          <span id="modal-annual-text2">Anual — R$555,00 / ano</span>
           <div class="modal-plan-sub">240 ligações · 2 meses grátis · melhor valor 🔥</div>
         </a>
-        <a href="https://ivox-api.btechsouto.shop/checkout?plan=monthly_brl" class="modal-plan-btn" onclick="fbq('track','InitiateCheckout')">
-          Mensal — R$29,90 / mês
+        <a href="https://ivox-api.btechsouto.shop/checkout?plan=monthly_brl" class="modal-plan-btn" id="modal-monthly-link2" onclick="fbq('track','InitiateCheckout')">
+          <span id="modal-monthly-text2">Mensal — R$57,90 / mês</span>
           <div class="modal-plan-sub">20 ligações · cancele quando quiser</div>
         </a>
       </div>
@@ -839,6 +852,7 @@
   /* ── LEAD CAPTURE ── */
   function submitLead() {
     var email = document.getElementById('modal-email').value.trim();
+    var phone = document.getElementById('modal-phone').value.trim();
     var errEl = document.getElementById('modal-err');
     var loadEl = document.getElementById('modal-loading');
     if (!email || !email.includes('@')) {
@@ -849,10 +863,10 @@
     loadEl.style.display = 'block';
     fbq('track', 'Lead');
 
-    fetch('https://ivox-api.btechsouto.shop/api/lead', {
+    fetch('/api/lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, source: 'landing-page' })
+      body: JSON.stringify({ email: email, phone: phone, source: 'landing-page', currency: activeCurrency })
     }).catch(function(){}).finally(function() {
       loadEl.style.display = 'none';
       document.getElementById('modal-step1').style.display = 'none';
@@ -861,21 +875,25 @@
   }
 
   /* ── CURRENCY TOGGLE ── */
+  var activeCurrency = 'brl';
   var prices = {
     brl: {
-      monthly: { html: '<sup>R$</sup>29<span style="font-size:20px">,90</span>', period: 'por mês', link: 'monthly_brl', btnStyle: '' },
-      annual:  { html: '<sup>R$</sup>295<span style="font-size:20px">,90</span>', period: 'por ano (~R$24,65/mês)', link: 'annual_brl', btnStyle: '' },
-      topup:   { html: '<sup>R$</sup>19<span style="font-size:20px">,90</span>', period: 'pacote único', link: 'topup_brl', btnStyle: 'background:#475569' }
+      monthly: { html: '<sup>R$</sup>57<span style="font-size:20px">,90</span>', period: 'por mês', link: 'monthly_brl', btnStyle: '' },
+      annual:  { html: '<sup>R$</sup>555<span style="font-size:20px">,00</span>', period: 'por ano (~R$46,25/mês)', link: 'annual_brl', btnStyle: '' },
+      topup:   { html: '<sup>R$</sup>29<span style="font-size:20px">,90</span>', period: 'pacote único', link: 'topup_brl', btnStyle: 'background:#475569' }
     },
     usd: {
-      monthly: { html: '<sup>$</sup>5<span style="font-size:20px">.99</span>', period: 'per month', link: 'monthly_usd', btnStyle: '' },
-      annual:  { html: '<sup>$</sup>59<span style="font-size:20px">.90</span>', period: 'per year (~$4.99/mo)', link: 'annual_usd', btnStyle: '' },
-      topup:   { html: '<sup>$</sup>3<span style="font-size:20px">.99</span>', period: 'one-time pack', link: 'topup_usd', btnStyle: 'background:#475569' }
+      monthly: { html: '<sup>$</sup>9<span style="font-size:20px">.90</span>', period: 'per month', link: 'monthly_usd', btnStyle: '' },
+      annual:  { html: '<sup>$</sup>95<span style="font-size:20px">.88</span>', period: 'per year (~$7.99/mo)', link: 'annual_usd', btnStyle: '' },
+      topup:   { html: '<sup>$</sup>4<span style="font-size:20px">.99</span>', period: 'one-time pack (5 credits)', link: 'topup_usd', btnStyle: 'background:#475569' }
     }
   };
 
   function setCurrency(c) {
+    activeCurrency = c;
     var p = prices[c];
+    var isBRL = c === 'brl';
+
     document.getElementById('price-monthly').innerHTML  = p.monthly.html;
     document.getElementById('period-monthly').textContent = p.monthly.period;
     document.getElementById('link-monthly').href = 'https://ivox-api.btechsouto.shop/checkout?plan=' + p.monthly.link;
@@ -891,8 +909,25 @@
     document.getElementById('link-topup').href = 'https://ivox-api.btechsouto.shop/checkout?plan=' + p.topup.link;
     document.getElementById('link-topup').style.cssText = p.topup.btnStyle;
 
-    document.getElementById('btn-brl').classList.toggle('active', c === 'brl');
-    document.getElementById('btn-usd').classList.toggle('active', c === 'usd');
+    document.getElementById('btn-brl').classList.toggle('active', isBRL);
+    document.getElementById('btn-usd').classList.toggle('active', !isBRL);
+
+    /* Update modal texts */
+    var annualLabel = isBRL ? 'Anual — R$555,00 / ano' : 'Annual — $95.88 / year';
+    var monthlyLabel = isBRL ? 'Mensal — R$57,90 / mês' : 'Monthly — $9.90 / month';
+    var annualPlan = 'annual_' + c;
+    var monthlyPlan = 'monthly_' + c;
+    var baseUrl = 'https://ivox-api.btechsouto.shop/checkout?plan=';
+    ['', '2'].forEach(function(sfx) {
+      var aT = document.getElementById('modal-annual-text' + sfx);
+      var mT = document.getElementById('modal-monthly-text' + sfx);
+      var aL = document.getElementById('modal-annual-link' + sfx);
+      var mL = document.getElementById('modal-monthly-link' + sfx);
+      if (aT) aT.textContent = annualLabel;
+      if (mT) mT.textContent = monthlyLabel;
+      if (aL) aL.href = baseUrl + annualPlan;
+      if (mL) mL.href = baseUrl + monthlyPlan;
+    });
   }
 
   /* ── AUDIO DEMO ── */
@@ -940,6 +975,25 @@
     u.onend = u.onerror = function() { stopAll(); };
     synth.speak(u);
   }
+
+  /* ── AUTO CURRENCY BY IP ── */
+  (function() {
+    var run = function() {
+      fetch('https://ipapi.co/json/')
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d && d.country_code && d.country_code !== 'BR') {
+            setCurrency('usd');
+          }
+        })
+        .catch(function() {});
+    };
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(run, { timeout: 3000 });
+    } else {
+      setTimeout(run, 1500);
+    }
+  })();
 </script>
 
 </body>
