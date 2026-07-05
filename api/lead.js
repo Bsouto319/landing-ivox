@@ -16,10 +16,28 @@ export default async function handler(req, res) {
   const now = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
   const currencyLabel = currency === 'usd' ? 'USD ($)' : 'BRL (R$)';
   const isUSD = currency === 'usd';
-  const tasks = [];
   const resendKey = process.env.RESEND_API_KEY;
+  const leadpilotSecret = process.env.IVOX_WEBHOOK_SECRET || 'ivox-lp-2026';
 
-  /* 1a. Email de NOTIFICAÇÃO interna (para o Bruno) */
+  /* ═══ PASSO 1: Cria a conta + magic link no ivox-api (SEQUENCIAL, precisa do link pro email) ═══ */
+  let accessLink = null;
+  try {
+    const signupRes = await fetch('https://ivox-api.btechsouto.shop/api/auth/lead-signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-ivox-secret': leadpilotSecret },
+      body: JSON.stringify({ email, phone }),
+    });
+    const signupBody = await signupRes.json().catch(() => ({}));
+    console.log(`[iVox Lead] lead-signup: ${signupRes.status} ${JSON.stringify(signupBody).slice(0, 200)}`);
+    if (signupRes.ok && signupBody.action_link) accessLink = signupBody.action_link;
+  } catch (e) {
+    console.error(`[iVox Lead] lead-signup FALHOU: ${e.message}`);
+  }
+
+  /* ═══ PASSO 2: Todos os canais em paralelo ═══ */
+  const tasks = [];
+
+  /* 2a. Email de notificação interna (para o Bruno) */
   if (resendKey) {
     tasks.push(
       fetch('https://api.resend.com/emails', {
@@ -35,6 +53,7 @@ export default async function handler(req, res) {
             <p>WhatsApp: <strong>${phone || 'não informado'}</strong></p>
             <p>Moeda: ${currencyLabel}</p>
             <p>Fonte: ${source}</p>
+            <p>Conta criada: <strong>${accessLink ? 'SIM ✅ (magic link enviado)' : 'NÃO ❌ (verificar lead-signup)'}</strong></p>
             <p>Data: ${now}</p>
             <hr>
             <p style="font-size:12px;color:#999">iVox Landing Page — landing-ivox.vercel.app</p>
@@ -51,76 +70,30 @@ export default async function handler(req, res) {
         })
     );
 
-    /* 1b. Email de LIBERAÇÃO DO TESTE GRÁTIS (para o LEAD) */
-    const leadSubject = isUSD
-      ? '🎉 Your free iVox call is unlocked!'
-      : '🎉 Sua ligação grátis no iVox está liberada!';
+    /* 2b. Email de ACESSO para o LEAD — botão entra direto no app logado */
+    const ctaUrl = accessLink || 'https://wa.me/5561982025951?text=' + (isUSD
+      ? 'Hi!%20I%20want%20to%20activate%20my%20free%20iVox%20call'
+      : 'Oi!%20Quero%20ativar%20minha%20liga%C3%A7%C3%A3o%20gr%C3%A1tis%20do%20iVox');
 
-    const leadHtml = isUSD
-      ? `
-        <div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#0f172a">
-          <div style="text-align:center;padding:28px 0 8px">
-            <span style="font-size:30px;font-weight:900">i<span style="color:#1d4ed8">Vox</span></span>
-          </div>
-          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:28px">
-            <h2 style="margin:0 0 12px;font-size:22px">Your free credit is unlocked! 🎉</h2>
-            <p style="font-size:15px;line-height:1.7;color:#475569">
-              Welcome to iVox! You now have <strong>1 free call</strong> to try it out:
-              record your message in Portuguese and our AI makes the call in English for you —
-              restaurants, DMV, hotels, lawyers, anything.
-            </p>
-            <p style="font-size:15px;line-height:1.7;color:#475569">
-              <strong>How to activate:</strong> our team will reach out on WhatsApp
-              ${phone ? `(<strong>${phone}</strong>)` : ''} shortly to set up your first call.
-              Want it faster? Just message us:
-            </p>
-            <div style="text-align:center;margin:22px 0">
-              <a href="https://wa.me/5561982025951?text=Hi!%20I%20want%20to%20activate%20my%20free%20iVox%20call"
-                 style="background:#16a34a;color:#fff;text-decoration:none;font-weight:800;padding:14px 28px;border-radius:12px;display:inline-block">
-                💬 Activate on WhatsApp
-              </a>
-            </div>
-            <p style="font-size:13px;color:#94a3b8;line-height:1.6">
-              After your free call, plans start at just $9.90/month — cancel anytime.
-            </p>
-          </div>
-          <p style="text-align:center;font-size:12px;color:#94a3b8;margin-top:16px">
-            iVox by BTechSouto · <a href="https://landing-ivox.vercel.app" style="color:#94a3b8">landing-ivox.vercel.app</a>
-          </p>
-        </div>
-      `
-      : `
-        <div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#0f172a">
-          <div style="text-align:center;padding:28px 0 8px">
-            <span style="font-size:30px;font-weight:900">i<span style="color:#1d4ed8">Vox</span></span>
-          </div>
-          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:28px">
-            <h2 style="margin:0 0 12px;font-size:22px">Seu crédito grátis está liberado! 🎉</h2>
-            <p style="font-size:15px;line-height:1.7;color:#475569">
-              Bem-vindo ao iVox! Você ganhou <strong>1 ligação grátis</strong> para testar:
-              grave seu recado em português e nossa IA faz a ligação em inglês por você —
-              restaurantes, DMV, hotéis, advogados, o que precisar.
-            </p>
-            <p style="font-size:15px;line-height:1.7;color:#475569">
-              <strong>Como ativar:</strong> nossa equipe vai te chamar no WhatsApp
-              ${phone ? `(<strong>${phone}</strong>)` : ''} em breve para configurar sua primeira ligação.
-              Quer agilizar? Manda mensagem pra gente:
-            </p>
-            <div style="text-align:center;margin:22px 0">
-              <a href="https://wa.me/5561982025951?text=Oi!%20Quero%20ativar%20minha%20liga%C3%A7%C3%A3o%20gr%C3%A1tis%20do%20iVox"
-                 style="background:#16a34a;color:#fff;text-decoration:none;font-weight:800;padding:14px 28px;border-radius:12px;display:inline-block">
-                💬 Ativar pelo WhatsApp
-              </a>
-            </div>
-            <p style="font-size:13px;color:#94a3b8;line-height:1.6">
-              Depois da ligação grátis, planos a partir de R$57,90/mês — cancele quando quiser.
-            </p>
-          </div>
-          <p style="text-align:center;font-size:12px;color:#94a3b8;margin-top:16px">
-            iVox by BTechSouto · <a href="https://landing-ivox.vercel.app" style="color:#94a3b8">landing-ivox.vercel.app</a>
-          </p>
-        </div>
-      `;
+    const ctaText = accessLink
+      ? (isUSD ? '🎙️ Open the app & make my free call' : '🎙️ Acessar o app e fazer minha ligação grátis')
+      : (isUSD ? '💬 Activate on WhatsApp' : '💬 Ativar pelo WhatsApp');
+
+    const leadSubject = isUSD
+      ? '🎉 Your free iVox call is ready — tap to start'
+      : '🎉 Sua ligação grátis no iVox está pronta — clique para começar';
+
+    const introTxt = isUSD
+      ? `Welcome to iVox! Your account is ready with <strong>1 free call credit</strong>. Tap the button below to open the app — you'll be logged in automatically. Record your message in Portuguese and our AI makes the call in English for you.`
+      : `Bem-vindo ao iVox! Sua conta já está criada com <strong>1 crédito de ligação grátis</strong>. Clique no botão abaixo para abrir o app — você entra logado automaticamente. Grave seu recado em português e nossa IA faz a ligação em inglês por você.`;
+
+    const tipTxt = isUSD
+      ? `💡 Tip: on your phone, open the link and use "Add to Home Screen" to install the iVox app.`
+      : `💡 Dica: no celular, abra o link e use "Adicionar à Tela de Início" para instalar o app do iVox.`;
+
+    const footTxt = isUSD
+      ? `After your free call, plans start at $9.90/month — cancel anytime. Need help? Just reply to this email.`
+      : `Depois da ligação grátis, planos a partir de R$57,90/mês — cancele quando quiser. Precisa de ajuda? É só responder este email.`;
 
     tasks.push(
       fetch('https://api.resend.com/emails', {
@@ -130,7 +103,28 @@ export default async function handler(req, res) {
           from: 'iVox <noreply@btechsouto.shop>',
           to: email,
           subject: leadSubject,
-          html: leadHtml,
+          html: `
+            <div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#0f172a">
+              <div style="text-align:center;padding:28px 0 8px">
+                <span style="font-size:30px;font-weight:900">i<span style="color:#1d4ed8">Vox</span></span>
+              </div>
+              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:28px">
+                <h2 style="margin:0 0 12px;font-size:22px">${isUSD ? 'Your free credit is ready! 🎉' : 'Seu crédito grátis está pronto! 🎉'}</h2>
+                <p style="font-size:15px;line-height:1.7;color:#475569">${introTxt}</p>
+                <div style="text-align:center;margin:24px 0">
+                  <a href="${ctaUrl}"
+                     style="background:#16a34a;color:#fff;text-decoration:none;font-weight:800;padding:16px 30px;border-radius:12px;display:inline-block;font-size:16px">
+                    ${ctaText}
+                  </a>
+                </div>
+                <p style="font-size:13px;line-height:1.6;color:#64748b">${tipTxt}</p>
+                <p style="font-size:13px;color:#94a3b8;line-height:1.6">${footTxt}</p>
+              </div>
+              <p style="text-align:center;font-size:12px;color:#94a3b8;margin-top:16px">
+                iVox by BTechSouto · <a href="https://landing-ivox.vercel.app" style="color:#94a3b8">landing-ivox.vercel.app</a>
+              </p>
+            </div>
+          `,
         }),
       })
         .then(async (r) => {
@@ -146,13 +140,14 @@ export default async function handler(req, res) {
     console.warn('[iVox Lead] RESEND_API_KEY não configurada — emails pulados');
   }
 
-  /* 2. WhatsApp via UAZAPI — envia para o lead se informou telefone */
+  /* 2c. WhatsApp via UAZAPI — também manda o link de acesso */
   const uazapiToken = process.env.UAZAPI_TOKEN;
   const cleanPhone = phone.replace(/\D/g, '');
   if (uazapiToken && cleanPhone.length > 7) {
+    const waLink = accessLink ? `\n\nAcesse aqui: ${accessLink}` : '';
     const waMensagem = isUSD
-      ? `Hi! This is iVox team. Your free call credit is unlocked! We'd love to help you set up your first call in English. Reply here anytime!`
-      : `Oi! Aqui e a equipe iVox. Seu credito de ligacao gratis esta liberado! Podemos te ajudar a configurar sua primeira ligacao em ingles agora. Responda aqui!`;
+      ? `Hi! This is iVox team. Your free call credit is ready! Open the app and make your first call in English.${accessLink ? `\n\nAccess here: ${accessLink}` : ''}`
+      : `Oi! Aqui e a equipe iVox. Seu credito de ligacao gratis esta pronto! Abra o app e faca sua primeira ligacao em ingles.${waLink}`;
 
     tasks.push(
       fetch('https://btechsoutoshop.uazapi.com/send/text', {
@@ -173,16 +168,12 @@ export default async function handler(req, res) {
     console.warn('[iVox Lead] UAZAPI_TOKEN não configurada — WhatsApp pulado');
   }
 
-  /* 3. LeadPilot kanban — cria card no B2B Prospector */
-  const leadpilotSecret = process.env.IVOX_WEBHOOK_SECRET || 'ivox-lp-2026';
+  /* 2d. LeadPilot kanban */
   tasks.push(
     fetch('https://leads.btechsouto.shop/webhook/ivox-lp', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-ivox-secret': leadpilotSecret,
-      },
-      body: JSON.stringify({ email, phone, currency, source }),
+      headers: { 'Content-Type': 'application/json', 'x-ivox-secret': leadpilotSecret },
+      body: JSON.stringify({ email, phone, currency, source, account_created: !!accessLink }),
     })
       .then(async (r) => {
         console.log(`[iVox Lead] LeadPilot: ${r.status} ${(await r.text()).slice(0, 200)}`);
@@ -194,10 +185,9 @@ export default async function handler(req, res) {
       })
   );
 
-  /* Aguarda todos os canais antes de responder */
   const results = await Promise.allSettled(tasks);
   const summary = results.map((r) => (r.status === 'fulfilled' ? r.value : { ok: false }));
-  console.log(`[iVox Lead] Resumo: ${JSON.stringify(summary)}`);
+  console.log(`[iVox Lead] Resumo: ${JSON.stringify(summary)} | conta=${!!accessLink}`);
 
-  return res.status(200).json({ ok: true, channels: summary });
+  return res.status(200).json({ ok: true, account_created: !!accessLink, channels: summary });
 }
